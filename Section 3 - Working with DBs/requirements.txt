@@ -3,3 +3,5 @@ databases
 asyncpg
 #psycopg2
 psycopg2-binary
+fastapi
+uvicorn
