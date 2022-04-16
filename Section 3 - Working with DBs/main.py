@@ -15,10 +15,13 @@ books = sqlalchemy.Table(
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
     sqlalchemy.Column("title", sqlalchemy.String),
     sqlalchemy.Column("author", sqlalchemy.String),
+    sqlalchemy.Column("pages", sqlalchemy.Integer)
 )
 
-engine = sqlalchemy.create_engine(DATABASE_URL)
-metadata.create_all(engine)
+
+# disable to test alembic migration
+# engine = sqlalchemy.create_engine(DATABASE_URL)
+# metadata.create_all(engine)
 
 
 app = FastAPI()
