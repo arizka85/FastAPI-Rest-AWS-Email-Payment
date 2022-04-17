@@ -1,3 +1,4 @@
+from operator import index
 import databases
 import sqlalchemy
 from fastapi import FastAPI, Request
@@ -9,19 +10,33 @@ database = databases.Database(DATABASE_URL)
 metadata = sqlalchemy.MetaData()
 
 
+
+
 books = sqlalchemy.Table(
     "books",
     metadata,
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
     sqlalchemy.Column("title", sqlalchemy.String),
     sqlalchemy.Column("author", sqlalchemy.String),
-    sqlalchemy.Column("pages", sqlalchemy.Integer)
+    sqlalchemy.Column("pages", sqlalchemy.Integer),
+    sqlalchemy.Column("reader_id", sqlalchemy.ForeignKey("readers.id"), nullable=False, index=True)
+)
+
+# One to Many relationship
+# (readers can have many books)
+readers = sqlalchemy.Table(
+    "readers",
+    metadata,
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("first_name", sqlalchemy.String),
+    sqlalchemy.Column("last_name", sqlalchemy.String)
 )
 
 
+
 # disable to test alembic migration
-# engine = sqlalchemy.create_engine(DATABASE_URL)
-# metadata.create_all(engine)
+engine = sqlalchemy.create_engine(DATABASE_URL)
+metadata.create_all(engine)
 
 
 app = FastAPI()
