@@ -18,8 +18,9 @@ books = sqlalchemy.Table(
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
     sqlalchemy.Column("title", sqlalchemy.String),
     sqlalchemy.Column("author", sqlalchemy.String),
-    sqlalchemy.Column("pages", sqlalchemy.Integer),
-    sqlalchemy.Column("reader_id", sqlalchemy.ForeignKey("readers.id"), nullable=False, index=True)
+    sqlalchemy.Column("pages", sqlalchemy.Integer)
+    # one to many
+    #sqlalchemy.Column("reader_id", sqlalchemy.ForeignKey("readers.id"), nullable=False, index=True) 
 )
 
 # One to Many relationship
@@ -33,6 +34,15 @@ readers = sqlalchemy.Table(
 )
 
 
+# Many to Many relationship
+# Mirror 
+readers_books = sqlalchemy.Table(
+    "readers_books",
+    metadata,
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("book_id", sqlalchemy.ForeignKey("books.id"), nullable=False),
+    sqlalchemy.Column("reader_id", sqlalchemy.ForeignKey("readers.id"), nullable=False),
+)
 
 # disable to test alembic migration
 engine = sqlalchemy.create_engine(DATABASE_URL)
@@ -67,13 +77,24 @@ async def create_book(request: Request):
 
 
 
-
 @app.post("/readers/")
 async def create_reader(request: Request):
     data = await request.json()
     query = readers.insert().values(**data)
     last_record_id = await database.execute(query)
     return {"id": last_record_id}
+
+
+#for reading book
+@app.post("/read")
+async def read_book(request: Request):
+    data = await request.json()
+    query = readers_books.insert().values(**data)
+    last_record_id = await database.execute(query)
+    return {"id": last_record_id}
+
+
+
 
 
 
