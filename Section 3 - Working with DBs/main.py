@@ -67,5 +67,15 @@ async def create_book(request: Request):
 
 
 
+
+@app.post("/readers/")
+async def create_reader(request: Request):
+    data = await request.json()
+    query = readers.insert().values(**data)
+    last_record_id = await database.execute(query)
+    return {"id": last_record_id}
+
+
+
 if __name__ == "__main__":
     uvicorn.run(app)
